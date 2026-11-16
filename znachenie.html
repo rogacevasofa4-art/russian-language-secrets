@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Лексическое значение — Тайны русского языка</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Comfortaa', 'Nunito', 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    transition: background 0.6s ease;
+  }
+  .container {
+    background: rgba(255,255,255,0.96);
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 1100px;
+    min-height: 85vh;
+    padding: 50px 60px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .header { text-align: center; margin-bottom: 25px; }
+  .header h1 { font-size: 32px; margin-bottom: 8px; font-weight: 700; transition: color 0.6s ease; line-height: 1.3; }
+  .header p { color: #777; font-size: 15px; }
+  .back-link {
+    display: inline-block;
+    margin-bottom: 15px;
+    color: #5a7a9e;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .back-link:hover { text-decoration: underline; }
+  .progress-bar { height: 10px; background: #e8e8e8; border-radius: 5px; margin-bottom: 35px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; transition: width 0.5s ease, background 0.6s ease; border-radius: 5px; }
+  .screen { display: none; flex: 1; flex-direction: column; }
+  .screen.active { display: flex; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .task-counter { text-align: center; font-size: 14px; margin-bottom: 18px; font-weight: 600; transition: color 0.6s ease; }
+  .question { font-size: 19px; color: #444; margin-bottom: 20px; line-height: 1.6; font-weight: 600; }
+  .question .text-box {
+    background: #f8f9fb; border-left: 4px solid; padding: 20px 22px;
+    border-radius: 12px; margin: 18px 0; font-style: italic;
+    color: #555; font-size: 16px; line-height: 1.7; font-weight: 400;
+    transition: border-color 0.6s ease;
+  }
+  .hint { font-size: 14px; color: #999; margin-top: 12px; font-weight: 400; }
+  .options { display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: center; }
+  .option {
+    padding: 16px 22px; background: #f8f9fb; border: 2px solid #e8e8e8;
+    border-radius: 14px; cursor: pointer; font-size: 16px; transition: all 0.2s; font-weight: 400;
+  }
+  .option:hover { border-color: #bbb; background: #f0f2f5; }
+  .option.selected { border-color: #888; background: #eef1f5; }
+  .option.correct { border-color: #6bc78a; background: #e8f8ef; }
+  .option.wrong { border-color: #e88a8a; background: #fdeaea; }
+  .option.disabled { pointer-events: none; opacity: 0.7; }
+  .text-input {
+    width: 100%; padding: 16px 22px; border: 2px solid #e8e8e8;
+    border-radius: 14px; font-size: 17px; font-family: inherit;
+    transition: border-color 0.2s; background: #f8f9fb;
+  }
+  .text-input:focus { outline: none; border-color: #999; background: #fff; }
+  .text-input.correct { border-color: #6bc78a; background: #e8f8ef; }
+  .text-input.wrong { border-color: #e88a8a; background: #fdeaea; }
+  .btn {
+    display: inline-block; padding: 15px 32px; color: #fff;
+    border: none; border-radius: 14px; font-size: 17px;
+    font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.6s ease, filter 0.2s;
+    margin-top: 25px; width: 100%;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); filter: brightness(1.08); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; filter: none; }
+  .btn.secondary { background: #fff; color: #555; border: 2px solid #ccc; margin-top: 10px; }
+  .btn.secondary:hover { background: #f5f5f5; box-shadow: none; filter: none; }
+  .feedback {
+    margin-top: 16px; padding: 14px 18px; border-radius: 12px;
+    font-size: 15px; display: none; line-height: 1.5;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: #e8f8ef; color: #2e7d52; border: 1px solid #6bc78a; }
+  .feedback.wrong { background: #fdeaea; color: #b54a4a; border: 1px solid #e88a8a; }
+  .match-container { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 15px 0; flex: 1; }
+  .match-column { display: flex; flex-direction: column; gap: 12px; justify-content: center; }
+  .match-item {
+    padding: 14px 18px; background: #f8f9fb; border: 2px solid #e8e8e8;
+    border-radius: 12px; cursor: pointer; font-size: 15px; transition: all 0.2s;
+    text-align: center; font-weight: 400;
+  }
+  .match-item:hover { border-color: #bbb; }
+  .match-item.selected { border-color: #999; background: #eef1f5; }
+  .match-item.matched { border-color: #6bc78a; background: #e8f8ef; cursor: default; opacity: 0.85; }
+  .match-item.error { border-color: #e88a8a; background: #fdeaea; animation: shake 0.3s; }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  .words-pool {
+    display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0;
+    padding: 18px; background: #f8f9fb; border-radius: 14px; min-height: 70px;
+    align-items: center;
+  }
+  .word-chip {
+    padding: 12px 20px; background: #fff; border: 2px solid #ccc;
+    border-radius: 22px; cursor: pointer; font-size: 16px; transition: all 0.2s;
+    user-select: none; font-weight: 400;
+  }
+  .word-chip:hover { background: #f0f2f5; }
+  .word-chip.used { opacity: 0.3; pointer-events: none; }
+  .answer-zone {
+    min-height: 70px; padding: 18px; background: #fafbfc;
+    border: 2px dashed #ccc; border-radius: 14px;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+  .answer-zone .word-chip { border-color: #6bc78a; background: #e8f8ef; }
+  .result-screen { text-align: center; padding: 20px 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .result-screen .score { font-size: 65px; font-weight: 700; margin: 20px 0; transition: color 0.6s ease; }
+  .result-screen .score span { font-size: 26px; color: #999; }
+  .result-screen .message { font-size: 21px; color: #444; margin-bottom: 10px; font-weight: 600; }
+  .result-screen .sub { font-size: 15px; color: #888; margin-bottom: 25px; font-weight: 400; }
+  .stars { font-size: 40px; margin: 10px 0; letter-spacing: 6px; }
+  .intro-screen { text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .intro-screen h2 { font-size: 24px; margin-bottom: 15px; transition: color 0.6s ease; font-weight: 700; }
+  .intro-screen p { color: #666; font-size: 16px; line-height: 1.7; margin-bottom: 20px; font-weight: 400; }
+  .intro-screen .icon { font-size: 70px; margin-bottom: 15px; }
+  .intro-screen .task-list {
+    text-align: left; background: #f8f9fb; padding: 20px 25px;
+    border-radius: 14px; margin: 20px 0; font-size: 15px; color: #555;
+    line-height: 1.8; font-weight: 400;
+  }
+  .intro-screen .task-list li { margin-bottom: 6px; }
+  @media (max-width: 600px) {
+    .container { padding: 30px 20px; min-height: 92vh; }
+    .header h1 { font-size: 22px; }
+    .question { font-size: 17px; }
+    .match-container { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body id="body">
+<div class="container">
+  <a href="index.html" class="back-link">← На главную</a>
+  <div class="header">
+    <h1 id="mainTitle">Лексическое значение</h1>
+    <p>Задание 12 ОГЭ · Найди слово по описанию значения</p>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- ЭКРАН 1: Приветствие -->
+  <div class="screen active" id="screenIntro">
+    <div class="intro-screen">
+      <div class="icon">📚</div>
+      <h2 id="introTitle">Раздел «Лексическое значение»</h2>
+      <p>Здесь ты потренируешься находить слово по его лексическому значению — это одно из ключевых умений <strong>задания 12 ОГЭ</strong>.</p>
+      <div class="task-list">
+        <li>1. Выбери слово по значению (3 задания)</li>
+        <li>2. Найди слово в тексте по значению (6 заданий)</li>
+        <li>3. Впиши слово по значению (3 задания)</li>
+        <li>4. Соедини слово и значение (3 задания)</li>
+        <li>5. Собери слово по значению (3 задания)</li>
+        <li>6. Найди лишнее (3 задания)</li>
+        <li>7. Исправь ошибку (3 задания)</li>
+      </div>
+      <button class="btn" onclick="startGame()">Начать</button>
+    </div>
+  </div>
+
+  <!-- ЗАДАНИЕ 1 -->
+  <div class="screen" id="screen1">
+    <div class="task-counter" id="counter1">Задание 1 из 3 · Выбор ответа</div>
+    <div class="question" id="question1"></div>
+    <div class="options" id="options1"></div>
+    <div class="feedback" id="feedback1"></div>
+    <button class="btn" id="btn1" disabled onclick="checkOption(1)">Проверить</button>
+  </div>
+
+  <!-- ЗАДАНИЕ 2 -->
+  <div class="screen" id="screen2">
+    <div class="task-counter" id="counter2">Задание 1 из 6 · Найди в тексте</div>
+    <div class="question" id="question2"></div>
+    <div class="options" id="options2"></div>
+    <div class="feedback" id="feedback2"></div>
+    <button class="btn" id="btn2" disabled onclick="checkOption(2)">Проверить</button>
+  </div>
+
+  <!-- ЗАДАНИЕ 3 -->
+  <div class="screen" id="screen3">
+    <div class="task-counter" id="counter3">Задание 1 из 3 · Впиши ответ</div>
+    <div class="question" id="question3"></div>
+    <input type="text" class="text-input" id="input3" placeholder="Твой ответ..." autocomplete="off">
+    <div class="feedback" id="feedback3"></div>
+    <button class="btn" id="btn3" disabled onclick="checkInput(3)">Проверить</button>
+  </div>
+
+  <!-- ЗАДАНИЕ 4 -->
+  <div class="screen" id="screen4">
+    <div class="task-counter" id="counter4">Задание 1 из 3 · Соедини пары</div>
+    <div class="question" id="question4"></div>
+    <div class="match-container">
+      <div class="match-column" id="matchLeft"></div>
+      <div class="match-column" id="matchRight"></div>
+    </div>
+    <div class="feedback" id="feedback4"></div>
+    <button class="btn" id="btn4" disabled onclick="checkMatch()">Проверить</button>
+  </div>
+
+  <!-- ЗАДАНИЕ 5 -->
+  <div class="screen" id="screen5">
+    <div class="task-counter" id="counter5">Задание 1 из 3 · Собери слово</div>
+    <div class="question" id="question5"></div>
+    <div class="answer-zone" id="answerZone5"></div>
+    <div class="words-pool" id="wordsPool5"></div>
+    <div class="feedback" id="feedback5"></div>
+    <button class="btn" id="btn5" disabled onclick="checkBuild()">Проверить</button>
+  </div>
+
+  <!-- ЗАДАНИЕ 6 -->
+  <div class="screen" id="screen6">
+    <div class="task-counter" id="counter6">Задание 1 из 3 · Найди лишнее</div>
+    <div class="question" id="question6"></div>
+    <div class="options" id="options6"></div>
+    <div class="feedback" id="feedback6"></div>
+    <button class="btn" id="btn6" disabled onclick="checkOption(6)">Проверить</button>
+  </div>
+
+  <!-- ЗАДАНИЕ 7 -->
+  <div class="screen" id="screen7">
+    <div class="task-counter" id="counter7">Задание 1 из 3 · Исправь ошибку</div>
+    <div class="question" id="question7"></div>
+    <div class="options" id="options7"></div>
+    <div class="feedback" id="feedback7"></div>
+    <button class="btn" id="btn7" disabled onclick="checkOption(7)">Проверить</button>
+  </div>
+
+  <!-- РЕЗУЛЬТАТ -->
+  <div class="screen" id="screenResult">
+    <div class="result-screen">
+      <div class="icon" id="resultIcon">🏆</div>
+      <h2 id="resultTitle">Отлично!</h2>
+      <div class="stars" id="resultStars">⭐⭐⭐</div>
+      <div class="score" id="resultScore">24 <span>/ 24</span></div>
+      <p class="message" id="resultMessage"></p>
+      <p class="sub" id="resultSub"></p>
+      <button class="btn" onclick="restartGame()">Пройти заново</button>
+      <button class="btn secondary" onclick="window.print()">Распечатать результат</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== ДАННЫЕ ЗАДАНИЙ =====
+const tasksData = {
+  1: [
+    { q: 'Выберите слово со значением «человек, который любит читать».', options: [
+      {text:'книголюб', correct:true},
+      {text:'писатель', correct:false},
+      {text:'библиотекарь', correct:false},
+      {text:'читатель', correct:false}
+    ], correctText:'книголюб'},
+    { q: 'Выберите слово со значением «место, где живут птицы».', options: [
+      {text:'гнездо', correct:true},
+      {text:'нора', correct:false},
+      {text:'берлога', correct:false},
+      {text:'дупло', correct:false}
+    ], correctText:'гнездо'},
+    { q: 'Выберите слово со значением «сильный испуг».', options: [
+      {text:'ужас', correct:true},
+      {text:'радость', correct:false},
+      {text:'гнев', correct:false},
+      {text:'печаль', correct:false}
+    ], correctText:'ужас'}
+  ],
+  2: [
+    { q: 'В предложениях 1–6 найдите слово с лексическим значением «нападающий игрок в командных играх с мячом». Выберите его из списка.',
+      text: '(1) В нашей паре я был ведущим, а Павлик – ведомым. (2) Недоброжелатели считали, что Павлик был приложением ко мне. (3) На первый взгляд так оно и было. (4) Меня нельзя было приглашать на день рождения без Павлика. (5) Я покинул футбольную дворовую команду, где считался лучшим бомбардиром, когда Павлика отказались взять хотя бы запасным, и вернулся вместе с ним. (6) Так возникла иллюзия нашего неравенства.',
+      hint: 'Нажми на слово.', options: [
+        {text:'бомбардиром', correct:true},
+        {text:'ведущим', correct:false},
+        {text:'запасным', correct:false},
+        {text:'приложением', correct:false}
+      ], correctText:'бомбардиром'},
+    { q: 'В предложениях 1–7 найдите слово с лексическим значением «обещающий успех, выгоды, удовольствие». Выберите его из списка.',
+      text: '(1) Мы сидели на майском берегу, под щедро распустившимся летним солнцем, у тонкой реки и быстрой воды. (2) Вода называлась Истье, а недалекая деревня – Истцы. (3) Вдруг Корин, друг отца, выступил с заманчивой идеей: – Захар, а помнишь? (4) Мы с тобой катались на велосипедах через лес в старые монастыри. (5) Давай сплавимся туда по реке! (6) На велосипедных колесах туда добираться полчаса. (7) А по речке часа за два, ну, за три спустимся.',
+      hint: 'Нажми на слово.', options: [
+        {text:'заманчивой', correct:true},
+        {text:'щедро', correct:false},
+        {text:'недалекая', correct:false},
+        {text:'быстрой', correct:false}
+      ], correctText:'заманчивой'},
+    { q: 'В предложениях 19–23 найдите диалектное слово с лексическим значением «вышитое полотенце». Выберите его из списка.',
+      text: '(19) Я пришёл к Пожалостиным. (20) Сказал, в чём дело, и попросил эти доски показать. (21) Старушка выносит доски, завёрнутые в чистый рушник. (22) Я взглянул и замер. (23) Мать честнáя, до чего тонкая работа, до чего твёрдо вырезано!',
+      hint: 'Нажми на слово.', options: [
+        {text:'рушник', correct:true},
+        {text:'доски', correct:false},
+        {text:'старушка', correct:false},
+        {text:'работа', correct:false}
+      ], correctText:'рушник'},
+    { q: 'В предложениях 1–5 найдите просторечное слово с лексическим значением «донять». Выберите его из списка.',
+      text: '(1) Всё началось на перемене перед шестым уроком. (2) Лена Болдырева, томная пышноволосая красавица, закапризничала: – Слушайте, люди! (3) Меня уже достала эта химия! (4) Кто-то в тон ей произнёс с плачущей интонацией: – А кого она не достала! (5) Этих реплик хватило для того, чтобы суматошная, искрящаяся мысль о побеге с урока вспыхнула молнией.',
+      hint: 'Нажми на слово.', options: [
+        {text:'достала', correct:true},
+        {text:'закапризничала', correct:false},
+        {text:'произнёс', correct:false},
+        {text:'вспыхнула', correct:false}
+      ], correctText:'достала'},
+    { q: 'В предложениях 12–17 найдите слово с лексическим значением «чувство близости, основанное на преданности и симпатии». Выберите его из списка.',
+      text: '(12) Светлана Леонидовна весело рассмеялась. – (13) Дорогие мои девочки, это вы сейчас так думаете, потому что никаких забот у вас нет. (14) Потом, когда появятся у вас семьи, заботы, личные интересы, а времени свободного будет оставаться всё меньше и меньше, тогда и проверится ваша дружба. (15) Хватит ли у вас привязанности друг к другу, чтобы хотя бы в самую тяжёлую минуту прийти на помощь, или вы будете успокаивать себя рассуждениями о собственной занятости? – (16) Кстати, о мелочах, – продолжала Светлана Леонидовна. – (17) Расскажу вам историю, как мои друзья помогли мне в одной мелочи.',
+      hint: 'Нажми на слово.', options: [
+        {text:'привязанности', correct:true},
+        {text:'дружба', correct:false},
+        {text:'заботы', correct:false},
+        {text:'помощь', correct:false}
+      ], correctText:'привязанности'},
+    { q: 'В предложениях 70–73 найдите разговорное слово с лексическим значением «высокий, нескладный человек». Выберите его из списка.',
+      text: '(70) Ксения Андреевна заняла своё место за столом, у которого она выучила за тридцать два года много хороших людей. (71) А сейчас перед столом Ксении Андреевны, рядом с классной доской, пробитой пулями, мялся длиннорукий рыжеусый верзила, нервно оправлял куртку, мычал что-то и прятал глаза от строгого взгляда старой учительницы. – (72) Стойте как следует, – сказала Ксения Андреевна, – что вы ёрзаете? (73) Теперь потрудитесь отвечать на мои вопросы.',
+      hint: 'Нажми на слово.', options: [
+        {text:'верзила', correct:true},
+        {text:'учительница', correct:false},
+        {text:'доска', correct:false},
+        {text:'куртка', correct:false}
+      ], correctText:'верзила'}
+  ],
+  3: [
+    { q: 'Впишите слово со значением «место, где живут птицы».',
+      text: 'Птицы свили ... на дереве.', hint: 'Впиши одно слово.',
+      answers:['гнездо'], correctText:'гнездо'},
+    { q: 'Впишите слово со значением «сильный испуг».',
+      text: 'Он испытал ... при виде змеи.', hint: 'Впиши одно слово.',
+      answers:['ужас'], correctText:'ужас'},
+    { q: 'Впишите слово со значением «человек, который любит читать».',
+      text: 'Мой дедушка — настоящий ...', hint: 'Впиши одно слово.',
+      answers:['книголюб'], correctText:'книголюб'}
+  ],
+  4: [
+    { q: 'Соедини слово и его лексическое значение.', hint: 'Нажми на слово, затем на его значение.',
+      pairs:[
+        {left:'Бомбардир', right:'Нападающий игрок'},
+        {left:'Рушник', right:'Вышитое полотенце'},
+        {left:'Верзила', right:'Высокий, нескладный человек'},
+        {left:'Привилегия', right:'Исключительное право'}
+      ]},
+    { q: 'Соедини слово и его лексическое значение.', hint: 'Нажми на слово, затем на его значение.',
+      pairs:[
+        {left:'Тыл', right:'Территория позади фронта'},
+        {left:'Кузов', right:'Часть машины для грузов'},
+        {left:'Обложка', right:'Плотные листы, закрывающие книгу'},
+        {left:'Тракт', right:'Большая наезженная дорога'}
+      ]},
+    { q: 'Соедини слово и его лексическое значение.', hint: 'Нажми на слово, затем на его значение.',
+      pairs:[
+        {left:'Гордость', right:'Чувство собственного достоинства'},
+        {left:'Бойкот', right:'Прекращение отношений в знак протеста'},
+        {left:'Элегантный', right:'Изысканный, изящный'},
+        {left:'Студёный', right:'Очень холодный'}
+      ]}
+  ],
+  5: [
+    { q: 'Собери слово со значением «сильный испуг».', hint: 'Нажимай на буквы в правильном порядке.',
+      words:['у','ж','а','с','р','а','д','о','с','т','ь'], correct:'ужас', correctText:'ужас'},
+    { q: 'Собери слово со значением «место, где живут птицы».', hint: 'Нажимай на буквы в правильном порядке.',
+      words:['г','н','е','з','д','о','н','о','р','а'], correct:'гнездо', correctText:'гнездо'},
+    { q: 'Собери слово со значением «человек, который любит читать».', hint: 'Нажимай на слоги в правильном порядке.',
+      words:['кни','го','люб','чи','та','тель'], correct:'книголюб', correctText:'книголюб'}
+  ],
+  6: [
+    { q: 'Три слова обозначают «бездельничать». Найди четвёртое — лишнее.', options: [
+      {text:'бить баклуши', correct:false},
+      {text:'гонять лодыря', correct:false},
+      {text:'сидеть сложа руки', correct:false},
+      {text:'работать', correct:true}
+    ], correctText:'работать', extra: '«Работать» — не означает «бездельничать», это антоним.'},
+    { q: 'Три слова обозначают «очень далеко». Найди четвёртое — лишнее.', options: [
+      {text:'за тридевять земель', correct:false},
+      {text:'на краю света', correct:false},
+      {text:'у чёрта на куличках', correct:false},
+      {text:'рядом', correct:true}
+    ], correctText:'рядом', extra: '«Рядом» — не означает «далеко», это антоним.'},
+    { q: 'Три слова обозначают «громко». Найди четвёртое — лишнее.', options: [
+      {text:'во весь голос', correct:false},
+      {text:'что есть мочи', correct:false},
+      {text:'на всю катушку', correct:false},
+      {text:'шёпотом', correct:true}
+    ], correctText:'шёпотом', extra: '«Шёпотом» — не означает «громко», это антоним.'}
+  ],
+  7: [
+    { q: 'В предложении слово употреблено в неверном значении. Выбери правильный вариант.',
+      text: '«Он открыл обложку и начал читать первую страницу.»', options: [
+      {text:'книгу', correct:true},
+      {text:'обложку', correct:false},
+      {text:'страницу', correct:false},
+      {text:'тетрадь', correct:false}
+    ], correctText:'книгу'},
+    { q: 'В предложении слово употреблено в неверном значении. Выбери правильный вариант.',
+      text: '«В кузове машины сидели пассажиры.»', options: [
+      {text:'салоне', correct:true},
+      {text:'кузове', correct:false},
+      {text:'кабине', correct:false},
+      {text:'багажнике', correct:false}
+    ], correctText:'салоне'},
+    { q: 'В предложении слово употреблено в неверном значении. Выбери правильный вариант.',
+      text: '«По тракту мчались современные автомобили.»', options: [
+      {text:'шоссе', correct:true},
+      {text:'тракту', correct:false},
+      {text:'пути', correct:false},
+      {text:'дороге', correct:false}
+    ], correctText:'шоссе'}
+  ]
+};
+
+const themes = {
+  screenIntro: { bg: 'linear-gradient(135deg, #e8f0e8 0%, #d4e2d4 100%)', accent: '#4a7a4a', btn: 'linear-gradient(135deg, #6a9a6a, #4a7a4a)' },
+  screen1:  { bg: 'linear-gradient(135deg, #e8f0e8 0%, #d4e2d4 100%)', accent: '#4a7a4a', btn: 'linear-gradient(135deg, #6a9a6a, #4a7a4a)' },
+  screen2:  { bg: 'linear-gradient(135deg, #fdf0e6 0%, #f5e0cc 100%)', accent: '#b07a4a', btn: 'linear-gradient(135deg, #d4a06a, #b07a4a)' },
+  screen3:  { bg: 'linear-gradient(135deg, #e6f5ee 0%, #d0ead9 100%)', accent: '#4a8a6a', btn: 'linear-gradient(135deg, #6aaa8a, #4a8a6a)' },
+  screen4:  { bg: 'linear-gradient(135deg, #f0e6f5 0%, #e0d0ed 100%)', accent: '#7a5a9e', btn: 'linear-gradient(135deg, #9a7ac0, #7a5a9e)' },
+  screen5:  { bg: 'linear-gradient(135deg, #fde6ee 0%, #f5d0de 100%)', accent: '#b05a7a', btn: 'linear-gradient(135deg, #d07a9a, #b05a7a)' },
+  screen6:  { bg: 'linear-gradient(135deg, #fdf5e6 0%, #f5ead0 100%)', accent: '#b09a4a', btn: 'linear-gradient(135deg, #d0ba6a, #b09a4a)' },
+  screen7:  { bg: 'linear-gradient(135deg, #fde6e6 0%, #f5d0d0 100%)', accent: '#b05a5a', btn: 'linear-gradient(135deg, #d07a7a, #b05a5a)' },
+  screenResult: { bg: 'linear-gradient(135deg, #fdf5e6 0%, #f5ead0 100%)', accent: '#b09a4a', btn: 'linear-gradient(135deg, #d0ba6a, #b09a4a)' }
+};
+
+let score = 0;
+let totalTasks = 24;
+let currentTaskType = 1;
+let currentTaskIndex = 0;
+let answered = {};
+let matchSelected = null;
+let matchPairs = 0;
+let buildAnswer = [];
+
+function applyTheme(screenId) {
+  const theme = themes[screenId] || themes.screenIntro;
+  document.getElementById('body').style.background = theme.bg;
+  document.getElementById('mainTitle').style.color = theme.accent;
+  document.getElementById('progressFill').style.background = theme.btn;
+  document.querySelectorAll('.btn').forEach(b => {
+    if (!b.classList.contains('secondary')) b.style.background = theme.btn;
+  });
+  document.querySelectorAll('.text-box').forEach(b => b.style.borderLeftColor = theme.accent);
+  document.querySelectorAll('.task-counter').forEach(c => c.style.color = theme.accent);
+  const introTitle = document.getElementById('introTitle');
+  if (introTitle) introTitle.style.color = theme.accent;
+}
+
+function startGame() {
+  score = 0;
+  answered = {};
+  currentTaskType = 1;
+  currentTaskIndex = 0;
+  loadTask(1, 0);
+}
+
+function clearFeedback(type) {
+  const feedback = document.getElementById('feedback' + type);
+  if (feedback) {
+    feedback.className = 'feedback';
+    feedback.textContent = '';
+  }
+}
+
+function loadTask(type, index) {
+  currentTaskType = type;
+  currentTaskIndex = index;
+  const data = tasksData[type][index];
+  const screenId = 'screen' + type;
+  showScreen(screenId);
+  applyTheme(screenId);
+  clearFeedback(type);
+
+  const totalInType = tasksData[type].length;
+  const counter = document.getElementById('counter' + type);
+  counter.textContent = `Задание ${index + 1} из ${totalInType} · ${getTypeName(type)}`;
+
+  if (type === 1 || type === 2 || type === 6 || type === 7) {
+    const qEl = document.getElementById('question' + type);
+    let qHTML = '<strong>' + data.q + '</strong>';
+    if (data.text) qHTML += '<div class="text-box">' + data.text + '</div>';
+    if (data.hint) qHTML += '<div class="hint">' + data.hint + '</div>';
+    qEl.innerHTML = qHTML;
+
+    const optionsEl = document.getElementById('options' + type);
+    optionsEl.innerHTML = '';
+    const shuffled = [...data.options].sort(() => Math.random() - 0.5);
+    shuffled.forEach(opt => {
+      const div = document.createElement('div');
+      div.className = 'option';
+      div.dataset.correct = opt.correct;
+      div.textContent = opt.text;
+      optionsEl.appendChild(div);
+    });
+
+    const btn = document.getElementById('btn' + type);
+    btn.textContent = 'Проверить';
+    btn.disabled = true;
+    btn.onclick = function() { checkOption(type); };
+  }
+
+  if (type === 3) {
+    const qEl = document.getElementById('question' + type);
+    let qHTML = '<strong>' + data.q + '</strong>';
+    if (data.text) qHTML += '<div class="text-box">' + data.text + '</div>';
+    if (data.hint) qHTML += '<div class="hint">' + data.hint + '</div>';
+    qEl.innerHTML = qHTML;
+
+    const input = document.getElementById('input3');
+    input.value = '';
+    input.disabled = false;
+    input.classList.remove('correct', 'wrong');
+    input.oninput = function() {
+      document.getElementById('btn3').disabled = this.value.trim() === '';
+    };
+
+    const btn = document.getElementById('btn3');
+    btn.textContent = 'Проверить';
+    btn.disabled = true;
+    btn.onclick = function() { checkInput(3); };
+  }
+
+  if (type === 4) {
+    const qEl = document.getElementById('question4');
+    qEl.innerHTML = '<strong>' + data.q + '</strong><div class="hint">' + data.hint + '</div>';
+
+    const leftCol = document.getElementById('matchLeft');
+    const rightCol = document.getElementById('matchRight');
+    leftCol.innerHTML = '';
+    rightCol.innerHTML = '';
+
+    const leftItems = data.pairs.map((p, i) => ({text: p.left, id: i}));
+    const rightItems = data.pairs.map((p, i) => ({text: p.right, id: i}));
+    const shuffledLeft = [...leftItems].sort(() => Math.random() - 0.5);
+    const shuffledRight = [...rightItems].sort(() => Math.random() - 0.5);
+
+    shuffledLeft.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'match-item';
+      div.dataset.id = item.id;
+      div.textContent = item.text;
+      leftCol.appendChild(div);
+    });
+    shuffledRight.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'match-item';
+      div.dataset.id = item.id;
+      div.textContent = item.text;
+      rightCol.appendChild(div);
+    });
+
+    matchSelected = null;
+    matchPairs = 0;
+    document.querySelectorAll('#matchLeft .match-item, #matchRight .match-item').forEach(item => {
+      item.style.pointerEvents = 'auto';
+      item.classList.remove('selected', 'matched', 'error');
+      item.onclick = function() { handleMatchClick(this); };
+    });
+
+    const btn = document.getElementById('btn4');
+    btn.textContent = 'Проверить';
+    btn.disabled = true;
+    btn.onclick = function() { checkMatch(); };
+  }
+
+  if (type === 5) {
+    const qEl = document.getElementById('question5');
+    qEl.innerHTML = '<strong>' + data.q + '</strong><div class="hint">' + data.hint + '</div>';
+
+    const answerZone = document.getElementById('answerZone5');
+    const wordsPool = document.getElementById('wordsPool5');
+    answerZone.innerHTML = '';
+    wordsPool.innerHTML = '';
+    buildAnswer = [];
+
+    const shuffledWords = [...data.words].sort(() => Math.random() - 0.5);
+    shuffledWords.forEach(word => {
+      const chip = document.createElement('div');
+      chip.className = 'word-chip';
+      chip.dataset.word = word;
+      chip.textContent = word;
+      chip.onclick = function() {
+        if (this.classList.contains('used')) return;
+        const newChip = document.createElement('div');
+        newChip.className = 'word-chip';
+        newChip.dataset.word = word;
+        newChip.textContent = word;
+        newChip.onclick = function() {
+          this.remove();
+          const poolChip = Array.from(wordsPool.children).find(c => c.dataset.word === word && c.classList.contains('used'));
+          if (poolChip) poolChip.classList.remove('used');
+          buildAnswer = buildAnswer.filter(w => w !== word);
+          document.getElementById('btn5').disabled = buildAnswer.length === 0;
+        };
+        answerZone.appendChild(newChip);
+        this.classList.add('used');
+        buildAnswer.push(word);
+        document.getElementById('btn5').disabled = buildAnswer.length === 0;
+      };
+      wordsPool.appendChild(chip);
+    });
+
+    const btn = document.getElementById('btn5');
+    btn.textContent = 'Проверить';
+    btn.disabled = true;
+    btn.onclick = function() { checkBuild(); };
+  }
+}
+
+function getTypeName(type) {
+  const names = {1:'Выбор ответа',2:'Найди в тексте',3:'Впиши ответ',4:'Соедини пары',5:'Собери слово',6:'Найди лишнее',7:'Исправь ошибку'};
+  return names[type] || '';
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  applyTheme(id);
+  const percent = (Object.keys(answered).length / totalTasks) * 100;
+  document.getElementById('progressFill').style.width = percent + '%';
+}
+
+function nextTask(type) {
+  const nextIndex = currentTaskIndex + 1;
+  if (nextIndex < tasksData[type].length) {
+    loadTask(type, nextIndex);
+  } else if (type < 7) {
+    loadTask(type + 1, 0);
+  } else {
+    document.getElementById('progressFill').style.width = '100%';
+    showResult();
+  }
+}
+
+function handleMatchClick(item) {
+  if (item.classList.contains('matched')) return;
+  const side = item.parentElement.id;
+  if (!matchSelected) {
+    matchSelected = item;
+    item.classList.add('selected');
+  } else if (matchSelected.parentElement.id === side) {
+    matchSelected.classList.remove('selected');
+    matchSelected = item;
+    item.classList.add('selected');
+  } else {
+    const id1 = matchSelected.dataset.id;
+    const id2 = item.dataset.id;
+    if (id1 === id2) {
+      matchSelected.classList.remove('selected');
+      matchSelected.classList.add('matched');
+      item.classList.add('matched');
+      matchPairs++;
+      matchSelected = null;
+      if (matchPairs === 4) {
+        document.getElementById('btn4').disabled = false;
+      }
+    } else {
+      item.classList.add('error');
+      const wrongItem = item;
+      setTimeout(() => {
+        wrongItem.classList.remove('error');
+        matchSelected.classList.remove('selected');
+        matchSelected = null;
+      }, 500);
+    }
+  }
+}
+
+document.addEventListener('click', function(e) {
+  const option = e.target.closest('.option');
+  if (!option) return;
+  const parent = option.parentElement;
+  if (parent.classList.contains('disabled')) return;
+  parent.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  option.classList.add('selected');
+  const taskType = parseInt(parent.id.replace('options',''));
+  document.getElementById('btn' + taskType).disabled = false;
+});
+
+function checkOption(type) {
+  const container = document.getElementById('options' + type);
+  const options = container.querySelectorAll('.option');
+  const feedback = document.getElementById('feedback' + type);
+  const btn = document.getElementById('btn' + type);
+
+  let selected = null;
+  options.forEach(o => { if (o.classList.contains('selected')) selected = o; });
+  if (!selected) return;
+
+  const isCorrect = selected.dataset.correct === 'true';
+  options.forEach(o => {
+    o.classList.add('disabled');
+    if (o.dataset.correct === 'true') o.classList.add('correct');
+    if (o === selected && !isCorrect) o.classList.add('wrong');
+  });
+
+  const taskData = tasksData[type][currentTaskIndex];
+
+  if (isCorrect) {
+    score++;
+    feedback.className = 'feedback correct show';
+    let msg = '✅ Верно! Молодец.';
+    if (taskData.extra) {
+      msg += ' ' + taskData.extra;
+    }
+    feedback.textContent = msg;
+  } else {
+    feedback.className = 'feedback wrong show';
+    const correctText = Array.from(options).find(o => o.dataset.correct === 'true').textContent;
+    let msg = '❌ Неверно. Правильный ответ: ' + correctText;
+    if (taskData.extra) {
+      msg += '. ' + taskData.extra;
+    }
+    feedback.textContent = msg;
+  }
+
+  const key = type + '_' + currentTaskIndex;
+  answered[key] = true;
+
+  btn.textContent = 'Далее →';
+  btn.disabled = false;
+  btn.onclick = function() { nextTask(type); };
+}
+
+function checkInput(type) {
+  const input = document.getElementById('input' + type);
+  const feedback = document.getElementById('feedback' + type);
+  const btn = document.getElementById('btn' + type);
+  const data = tasksData[type][currentTaskIndex];
+  const userAnswer = input.value.trim().toLowerCase();
+
+  const isCorrect = data.answers.some(ans => userAnswer.includes(ans));
+
+  if (isCorrect) {
+    score++;
+    input.classList.add('correct');
+    feedback.className = 'feedback correct show';
+    feedback.textContent = '✅ Верно! Правильный ответ: ' + data.correctText;
+  } else {
+    input.classList.add('wrong');
+    feedback.className = 'feedback wrong show';
+    feedback.textContent = '❌ Неверно. Правильный ответ: ' + data.correctText;
+  }
+
+  input.disabled = true;
+  const key = type + '_' + currentTaskIndex;
+  answered[key] = true;
+
+  btn.textContent = 'Далее →';
+  btn.disabled = false;
+  btn.onclick = function() { nextTask(type); };
+}
+
+function checkMatch() {
+  const feedback = document.getElementById('feedback4');
+  const btn = document.getElementById('btn4');
+
+  if (matchPairs === 4) {
+    score++;
+    feedback.className = 'feedback correct show';
+    feedback.textContent = '✅ Верно! Все пары соединены правильно.';
+  } else {
+    feedback.className = 'feedback wrong show';
+    feedback.textContent = '❌ Не все пары соединены правильно.';
+  }
+
+  document.querySelectorAll('.match-item').forEach(i => i.style.pointerEvents = 'none');
+  const key = '4_' + currentTaskIndex;
+  answered[key] = true;
+
+  btn.textContent = 'Далее →';
+  btn.disabled = false;
+  btn.onclick = function() { nextTask(4); };
+}
+
+function checkBuild() {
+  const feedback = document.getElementById('feedback5');
+  const btn = document.getElementById('btn5');
+  const data = tasksData[5][currentTaskIndex];
+  const userAnswer = buildAnswer.join(' ');
+
+  if (userAnswer === data.correct) {
+    score++;
+    feedback.className = 'feedback correct show';
+    feedback.textContent = '✅ Верно! «' + data.correctText + '» — правильно.';
+  } else {
+    feedback.className = 'feedback wrong show';
+    feedback.textContent = '❌ Неверно. Правильный ответ: ' + data.correctText;
+  }
+
+  document.querySelectorAll('.word-chip').forEach(c => c.style.pointerEvents = 'none');
+  const key = '5_' + currentTaskIndex;
+  answered[key] = true;
+
+  btn.textContent = 'Далее →';
+  btn.disabled = false;
+  btn.onclick = function() { nextTask(5); };
+}
+
+function showResult() {
+  showScreen('screenResult');
+  let icon, title, stars, message, sub;
+
+  if (score >= 21) {
+    icon = '🏆'; title = 'Отлично!'; stars = '⭐⭐⭐';
+    message = 'Ты отлично знаешь лексические значения!';
+    sub = 'Задание 12 ОГЭ тебе не страшно.';
+  } else if (score >= 16) {
+    icon = '👍'; title = 'Хорошо!'; stars = '⭐⭐';
+    message = 'Ты хорошо справился, но есть над чем поработать.';
+    sub = 'Повтори лексические значения и попробуй снова.';
+  } else if (score >= 9) {
+    icon = '📖'; title = 'Есть над чем работать'; stars = '⭐';
+    message = 'Ты знаешь некоторые значения, но нужно повторить.';
+    sub = 'Обрати внимание на задания 12 ОГЭ.';
+  } else {
+    icon = '📚'; title = 'Нужно повторить'; stars = '';
+    message = 'Пока не всё получается, но это можно исправить.';
+    sub = 'Повтори тему «Лексическое значение» и попробуй снова.';
+  }
+
+  document.getElementById('resultIcon').textContent = icon;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultStars').textContent = stars;
+  document.getElementById('resultScore').innerHTML = score + ' <span>/ ' + totalTasks + '</span>';
+  document.getElementById('resultMessage').textContent = message;
+  document.getElementById('resultSub').textContent = sub;
+  document.getElementById('resultScore').style.color = themes.screenResult.accent;
+}
+
+function restartGame() {
+  score = 0;
+  answered = {};
+  matchSelected = null;
+  matchPairs = 0;
+  buildAnswer = [];
+  document.getElementById('progressFill').style.width = '0%';
+  showScreen('screenIntro');
+}
+
+// Применяем тему к интро-экрану при загрузке
+applyTheme('screenIntro');
+</script>
+</body>
+</html>

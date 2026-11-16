@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тайны русского языка — Тренажёр ОГЭ</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Comfortaa', 'Nunito', 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #e8edf5 0%, #d4dfed 100%);
+  }
+  .container {
+    background: rgba(255,255,255,0.96);
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 1000px;
+    padding: 50px 60px;
+    text-align: center;
+  }
+  h1 {
+    color: #5a7a9e;
+    font-size: 32px;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .subtitle {
+    color: #777;
+    font-size: 16px;
+    margin-bottom: 40px;
+  }
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .menu-card {
+    background: #f8f9fb;
+    border: 2px solid #e8e8e8;
+    border-radius: 18px;
+    padding: 30px 20px;
+    text-decoration: none;
+    color: #444;
+    transition: all 0.25s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .menu-card:hover {
+    border-color: #5a7a9e;
+    background: #eef2f8;
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(90,122,158,0.15);
+  }
+  .menu-card .icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+  .menu-card h3 {
+    font-size: 18px;
+    margin-bottom: 6px;
+    color: #5a7a9e;
+  }
+  .menu-card p {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.5;
+  }
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #e8f8ef;
+    color: #2e7d52;
+    border-radius: 20px;
+    font-size: 11px;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  .footer {
+    margin-top: 40px;
+    font-size: 13px;
+    color: #aaa;
+  }
+  @media (max-width: 600px) {
+    .container { padding: 30px 20px; }
+    h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Тайны русского языка</h1>
+  <p class="subtitle">Интерактивный тренажёр по заданию 12 ОГЭ</p>
+
+  <div class="menu-grid">
+    <a href="frazeologizmy.html" class="menu-card">
+      <div class="icon">📖</div>
+      <h3>Фразеологизмы</h3>
+      <p>Найти в тексте, объяснить значение, собрать из слов</p>
+      <span class="badge">24 задания</span>
+    </a>
+
+    <a href="sinonimy.html" class="menu-card">
+      <div class="icon">🔄</div>
+      <h3>Синонимы</h3>
+      <p>Заменить книжное или разговорное слово нейтральным</p>
+      <span class="badge">24 задания</span>
+    </a>
+
+    <a href="antonimy.html" class="menu-card">
+      <div class="icon">↔️</div>
+      <h3>Антонимы</h3>
+      <p>Найти противоположное по значению слово</p>
+      <span class="badge">24 задания</span>
+    </a>
+
+    <a href="arhaizmy.html" class="menu-card">
+      <div class="icon">🏛️</div>
+      <h3>Устаревшие слова</h3>
+      <p>Найти архаизмы и историзмы в тексте</p>
+      <span class="badge">24 задания</span>
+    </a>
+
+    <a href="znachenie.html" class="menu-card">
+      <div class="icon">📚</div>
+      <h3>Лексическое значение</h3>
+      <p>Найти слово по описанию значения</p>
+      <span class="badge">24 задания</span>
+    </a>
+  </div>
+
+  <p class="footer">Элективный курс «Тайны русского языка» · Задание 12 ОГЭ</p>
+</div>
+</body>
+</html>
